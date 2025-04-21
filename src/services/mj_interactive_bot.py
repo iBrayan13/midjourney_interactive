@@ -4,6 +4,7 @@ import shutil
 import psutil
 import random
 import logging
+import asyncio
 import requests
 from datetime import datetime
 from typing import List, Dict, Any, Optional, Literal
@@ -332,6 +333,7 @@ class MidJourneyInteractive:
             self.update_prompt_status("downloading")
             img_url = message.attachments[0].url
             self.download_image(url=img_url)
+            self.update_prompt_status("success")
 
     
     async def close(self):
@@ -490,8 +492,8 @@ class MidJourneyInteractive:
                 send_message.click()
         
         
-    def run(self):
-        self.bot.run(self.token)
+    async def run(self):
+        await self.bot.start(token=self.token)
 
     async def proccess_img_prompt(self, img_prompt: str, img_prompt_num: int) -> bool:
         try:
@@ -501,23 +503,22 @@ class MidJourneyInteractive:
             await self.send_mj_message_as_user(message=f"/imagine {img_prompt}")
             self.update_prompt_status('generating')
 
-            # while True:
-            #     logger.info("Checking for image generation status...")
+            while True:
+                await asyncio.sleep(15)
+                logger.info(f"Checking for image generation status. Current status: {self.current_img_prompt_status}...")
 
-            #     if self.current_img_prompt_status == 'success':
-            #         logger.info("Image generation completed successfully.")
-            #         return True
+                if self.current_img_prompt_status == 'success':
+                    logger.info("Image generation completed successfully.")
+                    return True
                 
-            #     elif self.current_img_prompt_status == 'failed':
-            #         logger.error("Image generation failed.")
-            #         raise Exception("Image generation failed.")
+                elif self.current_img_prompt_status == 'failed':
+                    logger.error("Image generation failed.")
+                    raise Exception("Image generation failed.")
                 
-            #     elif self.last_status_update_time + 90 < datetime.timestamp(datetime.now()):
-            #         logger.error("Image generation timed out.")
-            #         self.update_prompt_status('failed')
-            #         raise Exception("Image generation timed out.")
-
-            #     time.sleep(90)
+                elif self.last_status_update_time + 90 < datetime.timestamp(datetime.now()):
+                    logger.error("Image generation timed out.")
+                    self.update_prompt_status('failed')
+                    raise Exception("Image generation timed out.")
             
         except Exception as ex:
             logger.error(f"Method: MidJourneyInteractive.proccess_img_prompt. Error: {ex}")
