@@ -7,5 +7,5 @@ class ImgPrompt(BaseModel):
     prompt: str
 
 class ImagesPrompts(BaseModel):
-    directory_name: str
+    directory: str
     img_prompts: List[ImgPrompt]

@@ -56,7 +56,7 @@ async def generate_images(
     with MidJourneyInteractive(
         settings=Settings(),
         browser_settings=browser_settings,
-        directory_name=body.prompts_data.directory_name
+        directory_path=body.prompts_data.directory
     ) as mj_interactive:
         bot_task = asyncio.create_task(mj_interactive.run())
         await asyncio.sleep(5)

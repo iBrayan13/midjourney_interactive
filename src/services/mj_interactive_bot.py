@@ -39,7 +39,7 @@ def User():
     return ua.random
 
 class MidJourneyInteractive:
-    def __init__(self, settings: Settings, browser_settings: Dict[str, Any], directory_name: str) -> None:
+    def __init__(self, settings: Settings, browser_settings: Dict[str, Any], directory_path: str) -> None:
         
         self.current_img_prompt_status: Literal['start', 'generating', 'selecting','downloading', 'success', 'failed'] = 'start'
         self.last_status_update_time: float | int = datetime.timestamp(datetime.now())
@@ -47,7 +47,7 @@ class MidJourneyInteractive:
         self.settings = settings
         self.secrets = self.settings.DISCORD_SECRET_CODES
         self.browser_settings = browser_settings
-        self.directory_name = directory_name
+        self.directory_path = directory_path
 
         # Configure undetected-chromedriver options
         self.options = webdriver.ChromeOptions()
@@ -341,8 +341,7 @@ class MidJourneyInteractive:
         await self.bot.close()
     
     def download_image(self, url: str):
-        target_dir = r'C:\Users\USER\Desktop\stories.aut.int_edit'
-        file_path = os.path.join(target_dir, f'{self.directory_name}/{self.current_prompt_num}.png')
+        file_path = os.path.join(self.directory_path, f'{self.current_prompt_num}.png')
 
         img_data = requests.get(url).content
         with open(file_path, 'wb') as handler:
