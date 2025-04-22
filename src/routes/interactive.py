@@ -1,10 +1,9 @@
 import logging
 import asyncio
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, status
 
 from src.core.settings import Settings
-from src.models.prompts import ImagesPrompts
 from src.utils.decryption import decrypt_data
 from src.models.inputs import InteractiveInput
 from src.services.mj_interactive_bot import MidJourneyInteractive
@@ -13,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 interactive_router = APIRouter(tags=["interactive"], prefix="/interactive")
 
-@interactive_router.get("/generate_images", status_code=status.HTTP_200_OK)
+@interactive_router.post("/generate_images", status_code=status.HTTP_200_OK)
 async def generate_images(
     body: InteractiveInput
 ):
